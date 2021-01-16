@@ -28,7 +28,7 @@
  ?>
  <?php 
 
-  	require 'header.html';
+  	require 'header.php';
 
 ?>
 	  <div class="content">
@@ -71,6 +71,6 @@
 
 <?php 
 
-  require 'footer.html';
+  require 'footer.php';
 
 ?>

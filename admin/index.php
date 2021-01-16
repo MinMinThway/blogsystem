@@ -9,7 +9,7 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
 ?>
 
 
-<?php include('header.html'); ?>
+<?php include('header.php'); ?>
     <!-- Main content -->
     <div class="content">
       <div class="container-fluid">
@@ -20,9 +20,41 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
                 <h3 class="card-title">Blog Listings</h3>
               </div>
               <?php
-                $stmt=$pdo->prepare("SELECT * FROM posts ORDER BY id DESC");
-                $stmt->execute();
-                $result=$stmt->fetchAll();
+                if (!empty($_GET['pageno'])) {
+                  $pageno=$_GET['pageno'];
+                }
+                else
+                {
+                  $pageno=1;
+                }
+                $numOfrecs=5;
+                $numOfset=($pageno-1)*$numOfrecs;
+
+                if (empty($_POST['search'])) {
+                  $stmt=$pdo->prepare("SELECT * FROM posts ORDER BY id DESC");
+                  $stmt->execute();
+                  $rawResult=$stmt->fetchAll();
+
+                  $total_pages=ceil(count($rawResult)/$numOfrecs);
+
+                  $stmt=$pdo->prepare("SELECT * FROM posts ORDER BY id DESC LIMIT $numOfset,$numOfrecs");
+                  $stmt->execute();
+                  $result=$stmt->fetchAll();
+                }
+                else
+                {
+                  $searchKey=$_POST['search'];
+
+                  $stmt=$pdo->prepare("SELECT * FROM posts WHERE title LIKE '%$searchKey%' ORDER BY id DESC");
+                  $stmt->execute();
+                  $rawResult=$stmt->fetchAll();
+
+                  $total_pages=ceil(count($rawResult)/$numOfrecs);
+
+                  $stmt=$pdo->prepare("SELECT * FROM posts WHERE title LIKE '%$searchKey%' ORDER BY id DESC LIMIT $numOfset,$numOfrecs");
+                  $stmt->execute();
+                  $result=$stmt->fetchAll();
+                  }
               ?>
               <!-- /.card-header -->
               <div class="card-body">
@@ -72,13 +104,13 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
                     <ul class="pagination">
                       <li class="page-item"><a class="page-link" href="?pageno=1">First</a></li>
                       <li class="page-item <?php if($pageno<=1) { echo "disable";}?> ">
-                        <a class="page-link" href="<?php if($pageno<=1){echo 'disable';} else{ echo "?pageno=".($pageno-1); } ?>">Previous</a>
+                        <a class="page-link" href="<?php if($pageno<=1){echo '#';} else{ echo "?pageno=".($pageno-1); } ?>">Previous</a>
                       </li>
                       <li class="page-item"><a class="page-link" href="#"><?php echo $pageno; ?></a></li>
-                      <li class="page-item <?php if($pageno => $total_pages) { echo 'disable'; } ?>">
-                        <a class="page-link" href="<?php if($pageno => $total_pages) { echo 'disable'; } else{ echo "?pageno=".($pageno+1)} ?>">Next</a>
+                      <li class="page-item <?php if($pageno >= $total_pages) { echo 'disable'; } ?>">
+                        <a class="page-link" href="<?php if($pageno >= $total_pages) { echo '#'; } else{ echo "?pageno=".($pageno+1); } ?>">Next</a>
                       </li>
-                      <li class="page-item"><a class="page-link" href="<?php echo 'pageno?='.$total_pages; ?>">Last</a></li>
+                      <li class="page-item"><a class="page-link" href="?pageno=<?php echo $total_pages; ?>">Last</a></li>
                     </ul>
                   </nav>
               </div>
@@ -92,4 +124,4 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
       </div><!-- /.container-fluid -->
     </div>
     <!-- /.content -->
-  <?php include('footer.html')?>
+  <?php include('footer.php')?>
