@@ -1,8 +1,16 @@
 <?php
+session_start();
+require '../config/config.php';
 
-	require 'header.php';
-	require '../config/config.php';
-  if($_POST)
+
+if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
+  header('Location: login.php');
+}
+if ($_SESSION['role']!=1) {
+  header('Location: login.php');
+}
+
+if($_POST)
   {
     $name=$_POST['name'];
     $email=$_POST['email'];
@@ -34,10 +42,9 @@
   
 
   }
-
 ?>
-
-	  <section class="content">
+<?php require 'header.php'; ?>
+    <section class="content">
       <div class="container-fluid">
         <div class="row">
           <div class="col-md-12">
@@ -47,7 +54,7 @@
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-              	<form action="" method="POST">
+                <form action="" method="POST">
                  <div class="form-group">
                    <label for="name">Name</label>
                    <input type="text" name="name" id="name" class="form-control">
@@ -91,6 +98,6 @@
 
 <?php
 
-	require 'footer.php';
+  require 'footer.php';
 
 ?>

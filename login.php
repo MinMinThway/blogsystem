@@ -13,6 +13,7 @@
       if ($user['password']==$password) {
         $_SESSION['user_id']=$user['id'];
         $_SESSION['username']=$user['name'];
+        $_SESSION['role']=0;
         $_SESSION['logged_in'] = time();
         header('location:index.php');
       }

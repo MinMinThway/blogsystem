@@ -1,8 +1,15 @@
 <?php
+session_start();
+require '../config/config.php';
 
-	require 'header.php';
-	require '../config/config.php';
-   if($_POST)
+
+if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
+  header('Location: login.php');
+}
+if ($_SESSION['role']!=1) {
+  header('Location: login.php');
+}
+ if($_POST)
   {
     $id=$_POST['id'];
     $name=$_POST['name'];
@@ -34,8 +41,11 @@
   $stmt=$pdo->prepare("SELECT * FROM users WHERE id=".$_GET['id']);
   $stmt->execute();
   $result=$stmt->fetchALL();
+
 ?>
-	  <section class="content">
+<?php require 'header.php'; ?>
+  
+      <section class="content">
       <div class="container-fluid">
         <div class="row">
           <div class="col-md-12">
@@ -45,7 +55,7 @@
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-              	<form action="" method="POST">
+                <form action="" method="POST">
                   <input type="text" name="id" value="<?php echo $result[0]['id']; ?>">
                  <div class="form-group">
                    <label for="name">Name</label>
@@ -86,6 +96,6 @@
 
 <?php
 
-	require 'footer.php';
+  require 'footer.php';
 
 ?>

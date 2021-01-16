@@ -1,10 +1,24 @@
 <?php
 session_start();
 require '../config/config.php';
-
-
+$aa=$_POST['search'];
+var_dump($aa).die();
 if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
   header('Location: login.php');
+}
+if ($_SESSION['role']!=1) {
+  header('Location: login.php');
+}
+if(!empty($_POST['search']))
+{
+  setcookie('search',$_POST['search'], time() + (86400 * 30), "/"); 
+}
+else
+{
+  if (empty($_GET['pageno'])) {
+    unset($_COOKIE['search']); 
+    setcookie('search', null, -1, '/'); 
+  }
 }
 ?>
 <?php require 'header.php'; ?>
@@ -27,10 +41,10 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
                   {
                     $pageno=1;
                   }
-                  $noface=4;
+                  $noface=1;
                   $numoffset=($pageno-1)*$noface;
               		$i=1;
-              		if(empty($_POST['search']))
+              		if(empty($_POST['search'])&& empty($_COOKIE['search']))
                   {
                     $stmt=$pdo->prepare("SELECT * FROM users ORDER BY id DESC");
                     $stmt->execute();
@@ -42,7 +56,7 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
                   }
                   else
                   {
-                    $searchKey=$_POST['search'];
+                    $searchKey=$_POST['search'] ? $_POST['search'] :$_COOKIE['search'] ;
                     $stmt=$pdo->prepare("SELECT * FROM users WHERE name LIKE '%$searchKey%' ORDER BY id DESC");
                     $stmt->execute();
                     $rawResult=$stmt->fetchAll();
