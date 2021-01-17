@@ -1,8 +1,6 @@
 <?php
 session_start();
 require '../config/config.php';
-
-
 if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
   header('Location: login.php');
 }
@@ -57,7 +55,7 @@ else
                 }
                 else
                 {
-                  $searchKey=$_POST['search'] ? $_POST['search'] :$_COOKIE['search'];
+                  $searchKey=!empty ($_POST['search']) ? $_POST['search'] :$_COOKIE['search'];
 
                   $stmt=$pdo->prepare("SELECT * FROM posts WHERE title LIKE '%$searchKey%' ORDER BY id DESC");
                   $stmt->execute();

@@ -74,6 +74,7 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
                 <img src="admin/images/<?php echo  $result[0]['image'];  ?>" style="height:250px !important;width:100% !important;" class="img-fluid">
 
                 <p><?php echo  $result[0]['content']; ?></p>
+                <a href="index.php" class="btn btn-info">Back</a>
                 <h3>Comments</h3>
                 <hr>
               </div>

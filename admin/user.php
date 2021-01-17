@@ -1,8 +1,6 @@
 <?php
 session_start();
 require '../config/config.php';
-$aa=$_POST['search'];
-var_dump($aa).die();
 if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
   header('Location: login.php');
 }
@@ -41,7 +39,7 @@ else
                   {
                     $pageno=1;
                   }
-                  $noface=1;
+                  $noface=5;
                   $numoffset=($pageno-1)*$noface;
               		$i=1;
               		if(empty($_POST['search'])&& empty($_COOKIE['search']))
@@ -56,7 +54,7 @@ else
                   }
                   else
                   {
-                    $searchKey=$_POST['search'] ? $_POST['search'] :$_COOKIE['search'] ;
+                    $searchKey=!empty ($_POST['search']) ? $_POST['search'] :$_COOKIE['search'];
                     $stmt=$pdo->prepare("SELECT * FROM users WHERE name LIKE '%$searchKey%' ORDER BY id DESC");
                     $stmt->execute();
                     $rawResult=$stmt->fetchAll();
