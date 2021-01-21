@@ -1,7 +1,7 @@
 <?php
 session_start();
 require 'config/config.php';
-
+require 'config/common.php';
 
 if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
   header('Location: login.php');
@@ -27,6 +27,12 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
   }
 
   if ($_POST) {
+    if(empty($_POST['comment'])){
+        if (empty($_POST['comment'])) {
+          $cmtError='Comment cannot null';
+        }
+    } 
+    else{
     $comments=$_POST['comment'];
     $stmt=$pdo->prepare("INSERT INTO comments(content,author_id,post_id) VALUES(:content,:author_id,:post_id)");
     $result=$stmt->execute(
@@ -36,6 +42,7 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
     {
       header("location:blogdetail.php?id=".$blogId);
     }
+  }
   }
 ?>
 <!DOCTYPE html>
@@ -66,14 +73,14 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
             <!-- Box Comment -->
             <div class="card card-widget">
               <div class="card-header">
-                <h4><?php echo $result[0]['title']; ?></h4>
+                <h4><?php echo escape($result[0]['title']); ?></h4>
                 <!-- /.card-tools -->
               </div>
               <!-- /.card-header -->
               <div class="card-body">
                 <img src="admin/images/<?php echo  $result[0]['image'];  ?>" style="height:250px !important;width:100% !important;" class="img-fluid">
 
-                <p><?php echo  $result[0]['content']; ?></p>
+                <p><?php echo  escape($result[0]['content']); ?></p>
                 <a href="index.php" class="btn btn-info">Back</a>
                 <h3>Comments</h3>
                 <hr>
@@ -89,10 +96,10 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
                   ?>
                   <div class="comment-text">
                     <span class="username">
-                      <?php echo $authRresult[$key][0]['name']; ?>
-                      <span class="text-muted float-right"><?php echo $value['created_at']; ?></span>
+                      <?php echo escape($authRresult[$key][0]['name']); ?>
+                      <span class="text-muted float-right"><?php echo escape($value['created_at']); ?></span>
                     </span><!-- /.username -->
-                   <?php echo $value['content']; ?>
+                   <?php echo escape($value['content']); ?>
                   </div>
                 <?php } ?>
                   <!-- /.comment-text -->
@@ -102,8 +109,9 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
               <!-- /.card-footer -->
               <div class="card-footer">
                 <form action="" method="post">
+                  <input name="_token" type="hidden" value="<?php echo $_SESSION['_token']; ?>">
                   <!-- .img-push is used to add margin to elements next to floating images -->
-                  <div class="img-push">
+                  <div class="img-push"><p style="color: red;"><?php echo empty($cmtError)?'':'*'.$cmtError; ?></p>
                     <input type="text" name="comment" class="form-control form-control-sm" placeholder="Press enter to post comment">
                   </div>
                 </form>

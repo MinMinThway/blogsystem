@@ -1,7 +1,7 @@
 <?php
 session_start();
 require 'config/config.php';
-
+require 'config/common.php';
 
 if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
   header('Location: login.php');
@@ -71,6 +71,7 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
     <h3 class="text-center my-3 p-2 bg-light pt-3">Blog Site</h3>
 
    <form class="form-inline ml-3" action="index.php" method="post" style="position: absolute;right: 20px;top: 20px;">
+    <input name="_token" type="hidden" value="<?php echo $_SESSION['_token']; ?>">
       <div class="input-group input-group-sm">
         <input name="search" class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
         <div class="input-group-append">
@@ -86,7 +87,7 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
      <div class="col-sm-12 col-md-4 col-lg-4">
         <div class="card">
           <div class="card-header">
-            <h4 class="text-center"><?php echo $value['title']; ?></h4>
+            <h4 class="text-center"><?php echo escape($value['title']); ?></h4>
           </div>
           <div class="card-body">
             <a href="blogdetail.php?id=<?php echo $value['id']; ?>"><img src="admin/images/<?php echo $value['image'];  ?>" style="height:250px !important;width:100% !important;" class="img-fluid"></a>

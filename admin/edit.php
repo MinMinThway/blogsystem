@@ -1,5 +1,6 @@
 <?php 
   session_start();
+  require '../config/common.php';
   if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
   header('Location: login.php');
   }
@@ -9,33 +10,44 @@
   require '../config/config.php';
 
   if ($_POST) {
-    $id=$_POST['id'];
-    $title=$_POST['title'];
-    $content=$_POST['content'];
-    if($_FILES['image']['name'] != null) {
-      $file='images/'.($_FILES['image']['name']);
-      $imageType=pathinfo($file,PATHINFO_EXTENSION );
-        if ($imageType!='jpg' && $imageType!='png' && $imageType!='jpeg')  {
-          echo "<script> alert('Image must be jpg or jpeg or png')";
+    if (empty($_POST['title']) || empty($_POST['content'])) {
+        if (empty($_POST['title'])) {
+          $titleError='Title cannot null';
         }
-        else
-        {
-          $image=$_FILES['image']['name'];
-          $v=move_uploaded_file($_FILES['image']['tmp_name'],$file);
-          $stmt=$pdo->prepare("UPDATE posts SET title='$title',content='$content',image='$image' WHERE id='$id'");
-          $result=$stmt->execute();
-          if ($result) {
-            echo "<script> alert('Update Successsfully');window.location.href='index.php'; </script>";
-          }
+        if (empty($_POST['content'])) {
+          $contentError=' Content cannot null';
         }
-
+     
     }
-    else
-    {
-      $stmt=$pdo->prepare("UPDATE posts SET title='$title',content='$content' WHERE id='$id'");
-      $result=$stmt->execute();
-      if ($result) {
-        echo "<script> alert('Update Successsfully');window.location.href='index.php'; </script>";
+    else{
+      $id=$_POST['id'];
+      $title=$_POST['title'];
+      $content=$_POST['content'];
+      if($_FILES['image']['name'] != null) {
+        $file='images/'.($_FILES['image']['name']);
+        $imageType=pathinfo($file,PATHINFO_EXTENSION );
+          if ($imageType!='jpg' && $imageType!='png' && $imageType!='jpeg')  {
+            echo "<script> alert('Image must be jpg or jpeg or png')";
+          }
+          else
+          {
+            $image=$_FILES['image']['name'];
+            $v=move_uploaded_file($_FILES['image']['tmp_name'],$file);
+            $stmt=$pdo->prepare("UPDATE posts SET title='$title',content='$content',image='$image' WHERE id='$id'");
+            $result=$stmt->execute();
+            if ($result) {
+              echo "<script> alert('Update Successsfully');window.location.href='index.php'; </script>";
+            }
+          }
+
+      }
+      else
+      {
+        $stmt=$pdo->prepare("UPDATE posts SET title='$title',content='$content' WHERE id='$id'");
+        $result=$stmt->execute();
+        if ($result) {
+          echo "<script> alert('Update Successsfully');window.location.href='index.php'; </script>";
+        }
       }
     }
   }
@@ -61,18 +73,19 @@
               <!-- /.card-header -->
               <div class="card-body">
                <form action="" method="POST" enctype='multipart/form-data'>
-                <input type="text" name="id" value="<?php echo $result[0]['id']; ?>">
+                 <input name="_token" type="hidden" value="<?php echo $_SESSION['_token']; ?>">
+                <input type="hidden" name="id" value="<?php echo $result[0]['id']; ?>">
                  <div class="form-group">
-                  <label>Title</label>
-                  <input type="text" name="title" class="form-control" value="<?php echo $result[0]['title'] ?>" required>
+                  <label>Title</label><p style="color: red;"><?php echo empty($titleError)?'':'*'.$titleError; ?></p>
+                  <input type="text" name="title" class="form-control" value="<?php echo escape( $result[0]['title']); ?>">
                 </div>
                 <div class="form-group">
-                  <label>Content</label>
-                  <textarea class="form-control" name="content"><?php echo $result[0]['content']; ?></textarea>
+                  <label>Content</label><p style="color: red;"><?php echo empty($contentError)?'':'*'.$contentError; ?></p>
+                  <textarea class="form-control" name="content"><?php echo escape($result[0]['content']); ?></textarea>
                 </div>
                 <div class="form-group">
                   <label>Image</label>
-                  <img src="images/<?php echo $result[0]['image'];  ?>" width="100px" height="100px" class="img-fluid">
+                  <img src="images/<?php echo $result[0]['image'];  ?>" width="100px" height="100px" class="img-fluid pt-3 pb-3">
                   <input type="file" name="image" class="form-control-file" value="" >
                 </div>
                 <div class="form-group">
