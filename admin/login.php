@@ -10,7 +10,7 @@
     $stmt->execute();
     $user=$stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($user) {
+    if ($user && $user['role'] == 1) {
       if (password_verify($password,$user['password'])) {
         $_SESSION['user_id']=$user['id'];
         $_SESSION['username']=$user['name'];
@@ -52,9 +52,10 @@
     <div class="card-body login-card-body">
 
       <form action="login.php" method="post">
-         <input name="_token" type="hidden" value="<?php echo $_SESSION['_token']; ?>">
+        <input name="_token" type="hidden" value="<?php echo $_SESSION['_token']; ?>">
+
         <div class="input-group mb-3">
-          <input type="email" name="email" class="form-control" placeholder="Email" >
+          <input type="email" name="email" class="form-control" placeholder="Email">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-envelope"></span>
@@ -62,7 +63,7 @@
           </div>
         </div>
         <div class="input-group mb-3">
-          <input type="password" name="password" class="form-control" placeholder="Password" >
+          <input type="password" name="password" class="form-control" placeholder="Password">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-lock"></span>
